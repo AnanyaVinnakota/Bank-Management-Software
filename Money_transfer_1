@@ -1,0 +1,276 @@
+package project1;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.HashMap;
+
+public class OnlineBankingSystem extends JFrame implements ActionListener {
+
+    // GUI Components
+    JTextField txtName, txtAccNo, txtPass, txtAmount, txtTarget;
+    JTextArea txtArea;
+    JButton btnCreate, btnLogin, btnDeposit, btnWithdraw, btnTransfer, btnBalance, btnExit;
+
+    // Panels
+    JPanel createPanel, loginPanel, mainPanel;
+    CardLayout cardLayout;
+
+    // Data storage
+    static class Account {
+        String name, password;
+        double balance;
+
+        Account(String name, String password, double balance) {
+            this.name = name;
+            this.password = password;
+            this.balance = balance;
+        }
+    }
+
+    HashMap<String, Account> accounts = new HashMap<>();
+    String currentAccNo = null; // Logged-in account number
+
+    OnlineBankingSystem() {
+        setTitle("Online Banking System");
+        setSize(500, 450);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        cardLayout = new CardLayout();
+        setLayout(cardLayout);
+
+        // ----------- CREATE ACCOUNT PANEL -----------
+        createPanel = new JPanel(null);
+        JLabel lblTitle = new JLabel("Create New Account");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 16));
+        lblTitle.setBounds(160, 10, 200, 25);
+        createPanel.add(lblTitle);
+
+        JLabel lblName = new JLabel("Name:");
+        lblName.setBounds(50, 50, 100, 25);
+        createPanel.add(lblName);
+        txtName = new JTextField();
+        txtName.setBounds(180, 50, 200, 25);
+        createPanel.add(txtName);
+
+        JLabel lblAccNo = new JLabel("Account Number:");
+        lblAccNo.setBounds(50, 90, 120, 25);
+        createPanel.add(lblAccNo);
+        txtAccNo = new JTextField();
+        txtAccNo.setBounds(180, 90, 200, 25);
+        createPanel.add(txtAccNo);
+
+        JLabel lblPass = new JLabel("Password:");
+        lblPass.setBounds(50, 130, 100, 25);
+        createPanel.add(lblPass);
+        txtPass = new JPasswordField();
+        txtPass.setBounds(180, 130, 200, 25);
+        createPanel.add(txtPass);
+
+        JLabel lblStartBal = new JLabel("Starting Balance:");
+        lblStartBal.setBounds(50, 170, 120, 25);
+        createPanel.add(lblStartBal);
+        txtAmount = new JTextField();
+        txtAmount.setBounds(180, 170, 200, 25);
+        createPanel.add(txtAmount);
+
+        btnCreate = new JButton("Create Account");
+        btnCreate.setBounds(160, 210, 150, 30);
+        btnCreate.addActionListener(this);
+        createPanel.add(btnCreate);
+
+        JButton btnGoLogin = new JButton("Go to Login");
+        btnGoLogin.setBounds(180, 260, 120, 30);
+        btnGoLogin.addActionListener(e -> cardLayout.show(getContentPane(), "login"));
+        createPanel.add(btnGoLogin);
+
+        // ----------- LOGIN PANEL -----------
+        loginPanel = new JPanel(null);
+        JLabel lblLoginTitle = new JLabel("Login to Your Account");
+        lblLoginTitle.setFont(new Font("Arial", Font.BOLD, 16));
+        lblLoginTitle.setBounds(140, 20, 250, 25);
+        loginPanel.add(lblLoginTitle);
+
+        JLabel lblLoginAcc = new JLabel("Account Number:");
+        lblLoginAcc.setBounds(60, 80, 120, 25);
+        loginPanel.add(lblLoginAcc);
+        JTextField txtLoginAcc = new JTextField();
+        txtLoginAcc.setBounds(200, 80, 180, 25);
+        loginPanel.add(txtLoginAcc);
+
+        JLabel lblLoginPass = new JLabel("Password:");
+        lblLoginPass.setBounds(60, 120, 120, 25);
+        loginPanel.add(lblLoginPass);
+        JPasswordField txtLoginPass = new JPasswordField();
+        txtLoginPass.setBounds(200, 120, 180, 25);
+        loginPanel.add(txtLoginPass);
+
+        btnLogin = new JButton("Login");
+        btnLogin.setBounds(190, 170, 100, 30);
+        loginPanel.add(btnLogin);
+
+        btnLogin.addActionListener(e -> {
+            String accNo = txtLoginAcc.getText().trim();
+            String pass = new String(txtLoginPass.getPassword());
+
+            if (accounts.containsKey(accNo)) {
+                Account acc = accounts.get(accNo);
+                if (acc.password.equals(pass)) {
+                    currentAccNo = accNo;
+                    txtArea.setText("Welcome " + acc.name + "!\n");
+                    cardLayout.show(getContentPane(), "main");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Incorrect password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Account not found!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // ----------- MAIN BANKING PANEL -----------
+        mainPanel = new JPanel(null);
+
+        JLabel lblWelcome = new JLabel("Banking Operations");
+        lblWelcome.setFont(new Font("Arial", Font.BOLD, 16));
+        lblWelcome.setBounds(160, 10, 200, 25);
+        mainPanel.add(lblWelcome);
+
+        JLabel lblTarget = new JLabel("Target Account (Transfer only):");
+        lblTarget.setBounds(40, 50, 200, 25);
+        mainPanel.add(lblTarget);
+        txtTarget = new JTextField();
+        txtTarget.setBounds(250, 50, 150, 25);
+        mainPanel.add(txtTarget);
+
+        JLabel lblAmt = new JLabel("Amount:");
+        lblAmt.setBounds(40, 90, 100, 25);
+        mainPanel.add(lblAmt);
+        JTextField txtMainAmt = new JTextField();
+        txtMainAmt.setBounds(150, 90, 150, 25);
+        mainPanel.add(txtMainAmt);
+
+        btnDeposit = new JButton("Deposit");
+        btnDeposit.setBounds(40, 140, 90, 30);
+        btnWithdraw = new JButton("Withdraw");
+        btnWithdraw.setBounds(140, 140, 100, 30);
+        btnTransfer = new JButton("Transfer");
+        btnTransfer.setBounds(250, 140, 100, 30);
+        btnBalance = new JButton("Balance");
+        btnBalance.setBounds(360, 140, 90, 30);
+        btnExit = new JButton("Logout");
+        btnExit.setBounds(200, 180, 90, 30);
+
+        mainPanel.add(btnDeposit);
+        mainPanel.add(btnWithdraw);
+        mainPanel.add(btnTransfer);
+        mainPanel.add(btnBalance);
+        mainPanel.add(btnExit);
+
+        txtArea = new JTextArea();
+        txtArea.setEditable(false);
+        JScrollPane scroll = new JScrollPane(txtArea);
+        scroll.setBounds(40, 230, 400, 140);
+        mainPanel.add(scroll);
+
+        // Listeners for banking buttons
+        btnDeposit.addActionListener(e -> {
+            double amt = parseAmount(txtMainAmt.getText());
+            if (amt <= 0) return;
+            Account acc = accounts.get(currentAccNo);
+            acc.balance += amt;
+            txtArea.append("Deposited ₹" + amt + "\n");
+        });
+
+        btnWithdraw.addActionListener(e -> {
+            double amt = parseAmount(txtMainAmt.getText());
+            if (amt <= 0) return;
+            Account acc = accounts.get(currentAccNo);
+            if (acc.balance >= amt) {
+                acc.balance -= amt;
+                txtArea.append("Withdrawn ₹" + amt + "\n");
+            } else {
+                txtArea.append("Insufficient balance!\n");
+            }
+        });
+
+        btnTransfer.addActionListener(e -> {
+            double amt = parseAmount(txtMainAmt.getText());
+            String targetAcc = txtTarget.getText().trim();
+            if (!accounts.containsKey(targetAcc)) {
+                txtArea.append("Target account not found!\n");
+                return;
+            }
+            Account acc = accounts.get(currentAccNo);
+            if (acc.balance >= amt) {
+                acc.balance -= amt;
+                accounts.get(targetAcc).balance += amt;
+                txtArea.append("Transferred ₹" + amt + " to " + targetAcc + "\n");
+            } else {
+                txtArea.append("Insufficient balance!\n");
+            }
+        });
+
+        btnBalance.addActionListener(e -> {
+            Account acc = accounts.get(currentAccNo);
+            txtArea.append("Current Balance: ₹" + acc.balance + "\n");
+        });
+
+        btnExit.addActionListener(e -> {
+            currentAccNo = null;
+            cardLayout.show(getContentPane(), "login");
+        });
+
+        // ----------- Add all panels to frame -----------
+        add(createPanel, "create");
+        add(loginPanel, "login");
+        add(mainPanel, "main");
+
+        cardLayout.show(getContentPane(), "create");
+        setVisible(true);
+    }
+
+    double parseAmount(String amtStr) {
+        try {
+            return Double.parseDouble(amtStr.trim());
+        } catch (Exception e) {
+            txtArea.append("Invalid amount entered!\n");
+            return -1;
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnCreate) {
+            String name = txtName.getText().trim();
+            String accNo = txtAccNo.getText().trim();
+            String pass = txtPass.getText().trim();
+            double bal;
+
+            try {
+                bal = Double.parseDouble(txtAmount.getText().trim());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Invalid balance!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (name.isEmpty() || accNo.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (accounts.containsKey(accNo)) {
+                JOptionPane.showMessageDialog(this, "Account already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            accounts.put(accNo, new Account(name, pass, bal));
+            JOptionPane.showMessageDialog(this, "Account created successfully!");
+            cardLayout.show(getContentPane(), "login");
+        }
+    }
+
+    public static void main(String[] args) {
+        new OnlineBankingSystem();
+    }
+}
+
