@@ -1,0 +1,180 @@
+package project;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+class BankAccount {
+    String name, accountNumber;
+    double balance;
+
+    BankAccount(String name, String accNumber, double balance) {
+        this.name = name;
+        this.accountNumber = accNumber;
+        this.balance = balance;
+    }
+
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            JOptionPane.showMessageDialog(null, "₹" + amount + " deposited!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid deposit amount!");
+        }
+    }
+
+    void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            JOptionPane.showMessageDialog(null, "₹" + amount + " withdrawn!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Insufficient balance or invalid amount!");
+        }
+    }
+
+    void checkBalance() {
+        JOptionPane.showMessageDialog(null, "Current Balance: ₹" + balance);
+    }
+
+    void accountDetails() {
+        JOptionPane.showMessageDialog(null,
+            "Account Holder: " + name +
+            "\nAccount Number: " + accountNumber +
+            "\nBalance: ₹" + balance);
+    }
+}
+
+public class BankManagementGUI extends JFrame implements ActionListener {
+
+    BankAccount account = null;
+    JRadioButton create, deposit, withdraw, balance, details, exit;
+    ButtonGroup group;
+    JButton proceed;
+
+    BankManagementGUI() {
+        setTitle("Bank Management System");
+        setSize(350, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Panel for radio buttons
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        create = new JRadioButton("Create Account");
+        deposit = new JRadioButton("Deposit");
+        withdraw = new JRadioButton("Withdraw");
+        balance = new JRadioButton("Check Balance");
+        details = new JRadioButton("View Account Details");
+        exit = new JRadioButton("Exit");
+
+        group = new ButtonGroup();
+        group.add(create);
+        group.add(deposit);
+        group.add(withdraw);
+        group.add(balance);
+        group.add(details);
+        group.add(exit);
+
+        panel.add(create);
+        panel.add(deposit);
+        panel.add(withdraw);
+        panel.add(balance);
+        panel.add(details);
+        panel.add(exit);
+
+        proceed = new JButton("Proceed");
+        proceed.addActionListener(this);
+
+        add(panel, BorderLayout.CENTER);
+        add(proceed, BorderLayout.SOUTH);
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (create.isSelected()) 
+            createAccount();
+        else if (deposit.isSelected()) 
+            depositMoney();
+        else if (withdraw.isSelected()) 
+            withdrawMoney();
+        else if (balance.isSelected()) 
+            checkBalance();
+        else if (details.isSelected()) 
+            showDetails();
+        else if (exit.isSelected()) 
+            System.exit(0);
+        else 
+            JOptionPane.showMessageDialog(this, "Please select an option!");
+    }
+
+    private void createAccount() {
+        // Create a panel with three text fields
+        JTextField nameField = new JTextField(10);
+        JTextField accField = new JTextField(10);
+        JTextField balField = new JTextField(10);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("Enter Name:"));
+        panel.add(nameField);
+        panel.add(new JLabel("Enter Account Number:"));
+        panel.add(accField);
+        panel.add(new JLabel("Enter Initial Balance:"));
+        panel.add(balField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, 
+                 "Create Account", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String name = nameField.getText();
+                String accNum = accField.getText();
+                double bal = Double.parseDouble(balField.getText());
+                account = new BankAccount(name, accNum, bal);
+                JOptionPane.showMessageDialog(this, "Account created successfully!");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid balance amount!");
+            }
+        }
+    }
+
+    private void depositMoney() {
+        if (account == null) { 
+            JOptionPane.showMessageDialog(this, "Create account first!"); 
+            return; 
+        }
+        double amt = Double.parseDouble(JOptionPane.showInputDialog("Enter deposit amount:"));
+        account.deposit(amt);
+    }
+
+    private void withdrawMoney() {
+        if (account == null) { 
+            JOptionPane.showMessageDialog(this, "Create account first!"); 
+            return; 
+        }
+        double amt = Double.parseDouble(JOptionPane.showInputDialog("Enter withdraw amount:"));
+        account.withdraw(amt);
+    }
+
+    private void checkBalance() {
+        if (account == null) { 
+            JOptionPane.showMessageDialog(this, "Create account first!"); 
+            return; 
+        }
+        account.checkBalance();
+    }
+
+    private void showDetails() {
+        if (account == null) { 
+            JOptionPane.showMessageDialog(this, "Create account first!"); 
+            return; 
+        }
+        account.accountDetails();
+    }
+
+    public static void main(String[] args) {
+        new BankManagementGUI();
+    }
+}
+
+
