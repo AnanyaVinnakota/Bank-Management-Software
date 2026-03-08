@@ -12,7 +12,7 @@ This project focuses on building a **reliable, scalable, and secure banking mana
 
 Managing banking operations requires organized handling of customer data, account balances, and transaction records. This project implements a simplified banking system that allows users to perform basic financial operations through a console-based interface.
 
-The system is designed using **OOP concepts such as classes, objects, encapsulation, and modular programming**, which help structure the application efficiently.
+The system is designed using **OOP concepts such as classes, objects, encapsulation, and modular programming**, which helps in structuring the application efficiently.
 
 Users can create accounts, perform deposits and withdrawals, check their balance, and view their account details. The application ensures structured data management and demonstrates how banking operations can be simulated using software.
 
